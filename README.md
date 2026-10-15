@@ -63,20 +63,17 @@ The system should avoid fabricating research findings, experimental results, or 
 
 ### Completed and Verified
 
-- [x] Set up the Python and Conda development environment.
-- [x] Created the initial project directory and Python package structure.
-- [x] Verified that the package structure and basic imports work correctly.
+- [x] Character chunking with behavior tests.
+- [x] In-memory BM25 retrieval over synthetic documents.
+- [x] Evidence prompt construction and Gemini answer generation.
+- [x] Command-line demo and automated tests using mocked model calls.
+- [x] GitHub Actions lint, formatting, and test checks.
 
 ### Planned / Not Yet Implemented
 
-- [ ] PDF parsing and text extraction.
-- [ ] Document chunking and metadata management.
-- [ ] Text embedding generation and vector storage.
-- [ ] Relevant document retrieval based on user queries.
-- [ ] Evidence-grounded answer generation using an LLM.
-- [ ] Source citations with paper titles, page numbers, and evidence snippets.
-- [ ] Cross-paper comparison and question answering.
-- [ ] Evaluation of retrieval and answer generation quality.
+- [ ] Integrate chunking and metadata management with real PDF ingestion.
+- [ ] Evaluate retrieval and generation on real papers.
+- [ ] Validate citations against source evidence.
 
 The project is currently in its initial development stage. The development environment and basic project structure have been verified, but the end-to-end paper ingestion and question-answering pipelines have not yet been implemented.
 
@@ -95,5 +92,44 @@ python -c "import llmrag; print(llmrag.__file__)"
 
 If the `llmrag` environment already exists, skip the first command.
 
-Currently, only the development environment and package import have been
-verified. RAG functionality has not yet been implemented.
+A command-line RAG demo over three synthetic CV texts is implemented.
+Real PDF ingestion, persistent storage, and citation validation are
+not yet implemented.
+
+## Run the Synthetic RAG Demo
+
+The demo retrieves from three synthetic CV texts, builds an evidence
+prompt, and calls Gemini. It does not ingest real papers yet.
+
+Install the project using the Development Setup instructions above.
+
+Set the API key in the current CMD / Anaconda Prompt session:
+
+```bat
+set "GEMINI_API_KEY=YOUR_API_KEY"
+```
+
+Run a question:
+
+```bat
+python -m llmrag "What does image segmentation assign to each pixel?" --top-k 2
+```
+
+The command makes a real API request and consumes model quota.
+It prints the answer followed by retrieved evidence and source metadata.
+Evidence numbers correspond to their order in the retrieved results;
+citations are not automatically validated.
+
+Show command options without calling the model:
+
+```bat
+python -m llmrag --help
+```
+
+Run automated checks without calling the model:
+
+```bat
+python -m ruff check .
+python -m ruff format --check .
+python -m pytest -q
+```

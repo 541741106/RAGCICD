@@ -13,14 +13,10 @@ Pipeline behavior has not yet been verified.
 
 ## Official References
 
-- Package metadata:
-  https://pypi.org/project/haystack-ai/3.3.0/
-- Getting started:
-  https://haystack.deepset.ai/overview/quick-start
-- First RAG pipeline tutorial:
-  https://haystack.deepset.ai/tutorials/27_first_rag_pipeline
-- Version 3.0 breaking changes:
-  https://haystack.deepset.ai/release-notes/3.0.0
+- [Package metadata](https://pypi.org/project/haystack-ai/3.3.0/)
+- [Getting started](https://haystack.deepset.ai/overview/quick-start)
+- [First RAG pipeline tutorial](https://haystack.deepset.ai/tutorials/27_first_rag_pipeline)
+- [Version 3.0 breaking changes](https://haystack.deepset.ai/release-notes/3.0.0)
 
 These web pages may change. The links do not imply that every example
 has been verified with the selected version.
