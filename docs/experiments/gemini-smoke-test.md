@@ -1,8 +1,10 @@
-Date: 2026-10-15
+# Date: 2026-10-15
+
 Model: gemini-3.5-flash-lite
 SDK: google-genai==2.31.0
 Data: Three fictitious documents, BM25 top_k=2
 Prompt source: build_evidence_prompt
+
 ## Case 1: Supported Answer
 
 Question: What does image segmentation assign to each pixel?
