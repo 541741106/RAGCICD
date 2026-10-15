@@ -27,4 +27,11 @@ Actual response:
 - Total tokens: 170
 - Observation: The model abstained without inventing a performance comparison.
 
-Limitations: Each case was run only once using default generation configurations; stability across repeated runs has not been verified.
+## Limitations
+
+Each case was run only once using default generation configurations; stability across repeated runs has not been verified.
+
+## Cost
+
+Actual billing cost was not retrieved. Token usage alone does not
+establish the amount charged.
