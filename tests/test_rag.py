@@ -1,6 +1,7 @@
 from unittest.mock import Mock, patch
 
 import pytest
+from haystack import Document
 
 from llmrag.rag import answer_question
 
@@ -54,3 +55,34 @@ def test_answer_question_abstains_when_retrieval_is_empty():
     assert result.answer == "Insufficient evidence was found to answer the question."
     assert result.documents == []
     client.models.generate_content.assert_not_called()
+
+
+def test_answer_question_uses_supplied_retriever():
+    client = Mock()
+    client.models.generate_content.return_value.text = "An answer [1]."
+
+    document = Document(
+        content="Evidence from a supplied collection.",
+        meta={
+            "paper_id": "custom-paper",
+            "paper_title": "Custom Paper",
+            "page_number": 3,
+            "source": "local-test",
+        },
+    )
+    retriever = Mock()
+    retriever.run.return_value = {"documents": [document]}
+
+    result = answer_question(
+        "A question",
+        client=client,
+        retriever=retriever,
+        top_k=3,
+    )
+
+    retriever.run.assert_called_once_with(query="A question", top_k=3)
+    assert result.answer == "An answer [1]."
+    assert result.documents == [document]
+    assert (
+        document.content in client.models.generate_content.call_args.kwargs["contents"]
+    )

@@ -7,3 +7,6 @@ __pycache__/
 .env
 data/raw/
 data/index/
+
+# Local Chinese learning reference
+/docs/code-guide.local.md

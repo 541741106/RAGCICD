@@ -63,21 +63,20 @@ The system should avoid fabricating research findings, experimental results, or 
 
 ### Completed and Verified
 
-- [x] Character chunking with behavior tests.
-- [x] In-memory BM25 retrieval over synthetic documents.
-- [x] Evidence prompt construction and Gemini answer generation.
-- [x] Command-line demo and automated tests using mocked model calls.
-- [x] GitHub Actions lint, formatting, and test checks.
+- [X]  Character chunking with behavior tests.
+- [X]  In-memory BM25 retrieval over synthetic documents.
+- [X]  Evidence prompt construction and Gemini answer generation.
+- [X]  Command-line demo and automated tests using mocked model calls.
+- [X]  GitHub Actions lint, formatting, and test checks.
+- [X]  Text-based PDF parsing and page-preserving character chunking.
+- [X]  In-memory BM25 retrieval and question answering over a supplied PDF.
 
 ### Planned / Not Yet Implemented
 
-- [ ] Integrate chunking and metadata management with real PDF ingestion.
-- [ ] Evaluate retrieval and generation on real papers.
-- [ ] Validate citations against source evidence.
+- [ ]  Evaluate retrieval and generation on real papers.
+- [ ]  Validate citations against source evidence.
 
-The project is currently in its initial development stage. The development environment and basic project structure have been verified, but the end-to-end paper ingestion and question-answering pipelines have not yet been implemented.
-
-Future development will focus on implementing and integrating the core RAG components, followed by evaluating the system's reliability and accuracy using real computer vision research papers.
+The project supports a synthetic demo and a single text-based PDF RAG workflow. Persistent storage, OCR, systematic evaluation, and automatic citation validation are not yet implemented.
 
 ## Development Setup
 
@@ -91,10 +90,6 @@ python -c "import llmrag; print(llmrag.__file__)"
 ```
 
 If the `llmrag` environment already exists, skip the first command.
-
-A command-line RAG demo over three synthetic CV texts is implemented.
-Real PDF ingestion, persistent storage, and citation validation are
-not yet implemented.
 
 ## Run the Synthetic RAG Demo
 
@@ -133,3 +128,25 @@ python -m ruff check .
 python -m ruff format --check .
 python -m pytest -q
 ```
+
+## Ask a Paper PDF
+
+Download the [ResNet paper](https://arxiv.org/pdf/1512.03385v1)
+and save it as `data/raw/resnet-1512.03385v1.pdf`.
+Raw PDFs are excluded from Git.
+
+After installing the project and setting `GEMINI_API_KEY`, run:
+
+```bat
+python -m llmrag "What are identity shortcut connections?" --pdf data/raw/resnet-1512.03385v1.pdf --paper-id arxiv:1512.03385v1 --paper-title "Deep Residual Learning for Image Recognition" --source https://arxiv.org/abs/1512.03385v1 --top-k 3
+```
+
+Each CLI invocation rebuilds the in-memory index using 1000-character
+chunks with 150-character overlap. The command calls Gemini and consumes
+model quota.
+
+PDF page indices start at 1. Extraction may retain broken words,
+ligatures, missing spaces, and figure labels. Scanned PDFs are not supported.
+
+See [the experiment record](docs/experiments/resnet-ingestion.md)
+for observed results and limitations.
