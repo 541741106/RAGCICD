@@ -150,3 +150,55 @@ ligatures, missing spaces, and figure labels. Scanned PDFs are not supported.
 
 See [the experiment record](docs/experiments/resnet-ingestion.md)
 for observed results and limitations.
+
+
+## Run the HTTP API
+
+Install the project using the Development Setup instructions above.
+
+For real question-answering requests, set the API key in the current
+CMD / Anaconda Prompt session:
+
+```bat
+set "GEMINI_API_KEY=YOUR_API_KEY"
+```
+
+Start the local development server:
+
+```bat
+python -m uvicorn llmrag.api:app --reload
+```
+
+- Health check: http://127.0.0.1:8000/health
+- Interactive API documentation: http://127.0.0.1:8000/docs
+
+### Ask a question
+
+In `/docs`, expand `POST /ask`, select **Try it out**, and submit:
+
+```json
+{
+  "question": "What does image segmentation assign to each pixel?",
+  "top_k": 1
+}
+```
+
+The endpoint currently uses the synthetic document collection and the
+default Gemini model. It does not use the PDF supplied to the CLI.
+
+Successful responses contain `answer` and `evidence`. Each evidence item
+includes its ID, paper ID, title, PDF page index, and content.
+
+### Status codes and limitations
+
+- `200`: Request completed successfully.
+- `422`: Request validation failed.
+- `502`: Generation returned no valid answer text.
+
+`GET /health` checks application responsiveness only and does not call
+Gemini. Real `/ask` generation consumes model quota. Automated tests
+replace the client dependency and do not call Gemini.
+
+The API has no caller authentication or rate limiting and is intended
+for local development. Other provider errors are not yet mapped to
+specific HTTP responses.
