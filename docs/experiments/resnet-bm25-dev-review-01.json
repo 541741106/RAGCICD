@@ -1,0 +1,43 @@
+{
+    "annotation_changes": [
+    {
+        "id": "resnet-dev-004",
+        "change": "Removed parameter and computational-cost claims from the reference answer because the question only asks about the bypass and addition mechanism.",
+        "retrieval_rerun": false
+    }
+    ],
+    "run_file": "docs/experiments/resnet-bm25-dev-run-01.json",
+    "reviewed_top_k": 3,
+    "reviews": [
+    {
+        "id": "resnet-dev-001",
+        "label": "sufficient",
+        "supporting_ranks": [1],
+        "reason": "Rank 1 directly explains identity shortcuts, addition to the stacked-layer output, and the absence of extra shortcut parameters or computational complexity."
+    },
+    {
+        "id": "resnet-dev-002",
+        "label": "insufficient",
+        "supporting_ranks": [],
+        "reason": "The retrieved chunks discuss addressing the degradation problem but do not explain accuracy degradation, increased training error, or the distinction from overfitting."
+    },
+    {
+        "id": "resnet-dev-003",
+        "label": "partial",
+        "supporting_ranks": [1],
+        "reason": "Rank 1 confirms evaluation of a 152-layer network, but does not establish it as the maximum ImageNet depth. Rank 2 mentions 1202 layers without sufficient local dataset context. The explicit ImageNet upper-bound statement was not retrieved."
+    },
+    {
+        "id": "resnet-dev-004",
+        "label": "sufficient",
+        "supporting_ranks": [1, 3],
+        "reason": "Rank 3 identifies identity shortcuts and defines y=F(x)+x, with x as the input and F as the learned residual mapping. Together with rank 1, this supports passing the input through the shortcut and adding it to the stacked-layer output."
+    },
+    {
+        "id": "resnet-dev-005",
+        "label": "not_applicable",
+        "supporting_ranks": [],
+        "reason": "This question is annotated as unanswerable. Retrieved passages do not report Vision Transformer accuracy. No generation was performed, so refusal behavior was not evaluated."
+    }
+  ]
+}
