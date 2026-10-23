@@ -1,0 +1,68 @@
+[
+  {
+    "id": "resnet-dev-001",
+    "paper_id": "arxiv:1512.03385v1",
+    "question": "What are identity shortcut connections?",
+    "answerable": true,
+    "reference_answer": "Identity shortcut connections skip one or more layers, perform identity mapping, and add their outputs to the outputs of the stacked layers. The identity shortcut path introduces no extra parameters or computational complexity.",
+    "evidence": [
+      {
+        "page_number": 2,
+        "text": "Shortcut connections [2, 34, 49] are those skipping one or more layers. In our case, the shortcut connections simply perform identity mapping, and their outputs are added to the outputs of the stacked layers (Fig. 2). Identity shortcut connections add neither extra parameter nor computational complexity."
+      }
+    ],
+    "question_group": "identity-shortcut-definition"
+  },
+    {
+    "id": "resnet-dev-002",
+    "paper_id": "arxiv:1512.03385v1",
+    "question": "What is the degradation problem described in the paper?",
+    "answerable": true,
+    "reference_answer": "The degradation problem occurs when increasing network depth causes accuracy to saturate and then degrade rapidly. It is not caused by overfitting: adding more layers to a suitably deep model leads to higher training error.",
+    "evidence": [
+      {
+        "page_number": 1,
+        "text": "When deeper networks are able to start converging, a degradation problem has been exposed: with the network depth increasing, accuracy gets saturated (which might be unsurprising) and then degrades rapidly. Unexpectedly, such degradation is not caused by overfitting, and adding more layers to a suitably deep model leads to higher training error, as reported in [11, 42] and thoroughly verified by our experiments."
+      }
+    ],
+    "question_group": "degradation-problem"
+  },
+    {
+    "id": "resnet-dev-003",
+    "paper_id": "arxiv:1512.03385v1",
+    "question": "How deep is the largest network evaluated on ImageNet in this paper?",
+    "answerable": true,
+    "reference_answer": "The largest network evaluated on ImageNet in this paper has 152 layers.",
+    "evidence": [
+      {
+        "page_number": 1,
+        "text": "On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers—8x deeper than VGG nets [41] but still having lower complexity."
+      }
+    ],
+    "question_group": "imagenet-depth"
+  },
+  {
+    "id": "resnet-dev-004",
+    "paper_id": "arxiv:1512.03385v1",
+    "question": "How does the network pass its input around stacked layers and combine it with their output?",
+    "answerable": true,
+    "reference_answer": "The network uses an identity shortcut to pass the input x around the stacked layers and adds it to their residual output F(x), producing F(x)+x.",
+    "evidence": [
+      {
+        "page_number": 2,
+        "text": "Shortcut connections [2, 34, 49] are those skipping one or more layers. In our case, the shortcut connections simply perform identity mapping, and their outputs are added to the outputs of the stacked layers (Fig. 2). Identity shortcut connections add neither extra parameter nor computational complexity."
+      }
+    ],
+    "question_group": "identity-shortcut-definition"
+  },
+  {
+    "id": "resnet-dev-005",
+    "paper_id": "arxiv:1512.03385v1",
+    "question": "What ImageNet accuracy does this paper report for a Vision Transformer?",
+    "answerable": false,
+    "reference_answer": "The paper does not provide a Vision Transformer ImageNet accuracy result.",
+    "evidence": [],
+    "question_group": "unreported-vit-result",
+    "annotation_note": "A full-text search of the PDF for 'Vision Transformer', 'transformer', and 'ViT' yielded no results. A manual review of Section 4.1 ('ImageNet Classification') and the corresponding results tables revealed no reported ImageNet accuracy for Vision Transformer. Consequently, this question is marked as unanswerable within the scope of the current paper."
+    }
+]

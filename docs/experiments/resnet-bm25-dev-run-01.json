@@ -1,0 +1,165 @@
+{
+  "dataset": "data/evaluation/resnet-dev.json",
+  "paper_id": "arxiv:1512.03385v1",
+  "haystack_version": "3.3.0",
+  "chunk_size": 1000,
+  "overlap": 150,
+  "top_k": 3,
+  "results": [
+    {
+      "id": "resnet-dev-001",
+      "question": "What are identity shortcut connections?",
+      "answerable": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 2,
+          "chunk_number": 2,
+          "score": 11.096885575695154,
+          "content": "han to ﬁt an identity mapping by a stack\nof nonlinear layers.\nThe formulation ofF (x) +x can be realized by feedfor-\nward neural networks with “shortcut connections” (Fig. 2).\nShortcut connections [2, 34, 49] are those skipping one or\nmore layers. In our case, the shortcut connections simply\nperform identity mapping, and their outputs are added to\nthe outputs of the stacked layers (Fig. 2). Identity short-\ncut connections add neither extra parameter nor computa-\ntional complexity. The entire network can still be trained\nend-to-end by SGD with backpropagation, and can be eas-\nily implemented using common libraries ( e.g., Caffe [19])\nwithout modifying the solvers.\nWe present comprehensive experiments on ImageNet\n[36] to show the degradation problem and evaluate our\nmethod. We show that: 1) Our extremely deep residual nets\nare easy to optimize, but the counterpart “plain” nets (that\nsimply stack layers) exhibit higher training error when the\ndepth increases; 2) Our deep residual nets can"
+        },
+        {
+          "rank": 2,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 2,
+          "chunk_number": 6,
+          "score": 10.502584996439927,
+          "content": "ons. Practices and theories that lead to\nshortcut connections [2, 34, 49] have been studied for a long\ntime. An early practice of training multi-layer perceptrons\n(MLPs) is to add a linear layer connected from the network\ninput to the output [34, 49]. In [44, 24], a few interme-\ndiate layers are directly connected to auxiliary classiﬁers\nfor addressing vanishing/exploding gradients. The papers\nof [39, 38, 31, 47] propose methods for centering layer re-\nsponses, gradients, and propagated errors, implemented by\nshortcut connections. In [44], an “inception” layer is com-\nposed of a shortcut branch and a few deeper branches.\nConcurrent with our work, “highway networks” [42, 43]\npresent shortcut connections with gating functions [15].\nThese gates are data-dependent and have parameters, in\ncontrast to our identity shortcuts that are parameter-free.\nWhen a gated shortcut is “closed” (approaching zero), the\nlayers in highway networks represent non-residual func-\ntions. On the contrary, our for"
+        },
+        {
+          "rank": 3,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 4,
+          "chunk_number": 3,
+          "score": 9.28867259357551,
+          "content": "ers (3.6 billion\nFLOPs). The dotted shortcuts increase dimensions. Table 1shows\nmore details and other variants.\nResidual Network. Based on the above plain network, we\ninsert shortcut connections (Fig. 3, right) which turn the\nnetwork into its counterpart residual version. The identity\nshortcuts (Eqn.(1)) can be directly used when the input and\noutput are of the same dimensions (solid line shortcuts in\nFig. 3). When the dimensions increase (dotted line shortcuts\nin Fig. 3), we consider two options: (A) The shortcut still\nperforms identity mapping, with extra zero entries padded\nfor increasing dimensions. This option introduces no extra\nparameter; (B) The projection shortcut in Eqn.(2) is used to\nmatch dimensions (done by 1×1 convolutions). For both\noptions, when the shortcuts go across feature maps of two\nsizes, they are performed with a stride of 2.\n3.4. Implementation\nOur implementation for ImageNet follows the practice\nin [21, 41]. The image is resized with its shorter side ran-\ndom"
+        }
+      ]
+    },
+    {
+      "id": "resnet-dev-002",
+      "question": "What is the degradation problem described in the paper?",
+      "answerable": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 3,
+          "chunk_number": 5,
+          "score": 8.314795897373807,
+          "content": "tion Ws by the\nshortcut connections to match the dimensions:\ny =F (x,{Wi}) +Wsx. (2)\nWe can also use a square matrixWs in Eqn.(1). But we will\nshow by experiments that the identity mapping is sufﬁcient\nfor addressing the degradation problem and is economical,\nand thusWs is only used when matching dimensions.\nThe form of the residual function F is ﬂexible. Exper-\niments in this paper involve a function F that has two or\nthree layers (Fig. 5), while more layers are possible. But if\nF has only a single layer, Eqn.(1) is similar to a linear layer:\ny =W1x + x, for which we have not observed advantages.\nWe also note that although the above notations are about\nfully-connected layers for simplicity, they are applicable to\nconvolutional layers. The function F (x,{Wi}) can repre-\nsent multiple convolutional layers. The element-wise addi-\ntion is performed on two feature maps, channel by channel.\n3.3. Network Architectures\nWe have tested various plain/residual nets, and have ob-\nserved consistent"
+        },
+        {
+          "rank": 2,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 6,
+          "chunk_number": 4,
+          "score": 8.244976568370177,
+          "content": "counterpart. B is slightly better than A. We\nargue that this is because the zero-padded dimensions in A\nindeed have no residual learning. C is marginally better than\nB, and we attribute this to the extra parameters introduced\nby many (thirteen) projection shortcuts. But the small dif-\nferences among A/B/C indicate that projection shortcuts are\nnot essential for addressing the degradation problem. So we\ndo not use option C in the rest of this paper, to reduce mem-\nory/time complexity and model sizes. Identity shortcuts are\nparticularly important for not increasing the complexity of\nthe bottleneck architectures that are introduced below.\nDeeper Bottleneck Architectures. Next we describe our\ndeeper nets for ImageNet. Because of concerns on the train-\ning time that we can afford, we modify the building block\nas a bottleneck design4. For each residual function F, we\nuse a stack of 3 layers instead of 2 (Fig. 5). The three layers\nare 1×1, 3×3, and 1×1 convolutions, where the 1×1 layers\nare r"
+        },
+        {
+          "rank": 3,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 2,
+          "chunk_number": 1,
+          "score": 8.242233716833368,
+          "content": "identity\nweight layer\nweight layer\nrelu\nreluF(x)\u0001+\u0001x\nx\nF(x) x\nFigure 2. Residual learning: a building block.\nare comparably good or better than the constructed solution\n(or unable to do so in feasible time).\nIn this paper, we address the degradation problem by\nintroducing a deep residual learning framework. In-\nstead of hoping each few stacked layers directly ﬁt a\ndesired underlying mapping, we explicitly let these lay-\ners ﬁt a residual mapping. Formally, denoting the desired\nunderlying mapping asH(x), we let the stacked nonlinear\nlayers ﬁt another mapping ofF(x) :=H(x)− x. The orig-\ninal mapping is recast intoF (x)+ x. We hypothesize that it\nis easier to optimize the residual mapping than to optimize\nthe original, unreferenced mapping. To the extreme, if an\nidentity mapping were optimal, it would be easier to push\nthe residual to zero than to ﬁt an identity mapping by a stack\nof nonlinear layers.\nThe formulation ofF (x) +x can be realized by feedfor-\nward neural networks with “shortc"
+        }
+      ]
+    },
+    {
+      "id": "resnet-dev-003",
+      "question": "How deep is the largest network evaluated on ImageNet in this paper?",
+      "answerable": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 7,
+          "chunk_number": 2,
+          "score": 9.052616097171407,
+          "content": "vious best single-model results.\nOur baseline 34-layer ResNets have achieved very compet-\nitive accuracy. Our 152-layer ResNet has a single-model\ntop-5 validation error of 4.49%. This single-model result\noutperforms all previous ensemble results (Table 5). We\ncombine six models of different depth to form an ensemble\n(only with two 152-layer ones at the time of submitting).\nThis leads to 3.57% top-5 error on the test set (Table 5).\nThis entry won the 1st place in ILSVRC 2015.\n4.2. CIFAR-10 and Analysis\nWe conducted more studies on the CIFAR-10 dataset\n[20], which consists of 50k training images and 10k test-\ning images in 10 classes. We present experiments trained\non the training set and evaluated on the test set. Our focus\nis on the behaviors of extremely deep networks, but not on\npushing the state-of-the-art results, so we intentionally use\nsimple architectures as follows.\nThe plain/residual architectures follow the form in Fig. 3\n(middle/right). The network inputs are 32×32 images, w"
+        },
+        {
+          "rank": 2,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 8,
+          "chunk_number": 4,
+          "score": 7.997183417993659,
+          "content": "ion mAP (%) on the PASCAL VOC\n2007/2012 test sets using baseline Faster R-CNN. See also Ta-\nble 10 and 11 for better results.\nmetric mAP@.5 mAP@[.5, .95]\nVGG-16 41.5 21.2\nResNet-101 48.4 27.2\nTable 8. Object detection mAP (%) on the COCO validation set\nusing baseline Faster R-CNN. See also Table 9 for better results.\nhave similar training error. We argue that this is because of\noverﬁtting. The 1202-layer network may be unnecessarily\nlarge (19.4M) for this small dataset. Strong regularization\nsuch as maxout [10] or dropout [14] is applied to obtain the\nbest results ([10, 25, 24, 35]) on this dataset. In this paper,\nwe use no maxout/dropout and just simply impose regular-\nization via deep and thin architectures by design, without\ndistracting from the focus on the difﬁculties of optimiza-\ntion. But combining with stronger regularization may im-\nprove results, which we will study in the future.\n4.3. Object Detection on PASCAL and MS COCO\nOur method has good generalization performance on\not"
+        },
+        {
+          "rank": 3,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 11,
+          "chunk_number": 5,
+          "score": 7.18972425674094,
+          "content": " Our results (mAP, %) on the ImageNet detection dataset.\nOur detection system is Faster R-CNN [32] with the improvements\nin Table 9, using ResNet-101.\nwe achieve 85.6% mAP on PASCAL VOC 2007 (Table 10)\nand 83.8% on PASCAL VOC 2012 (Table 11)6. The result\non PASCAL VOC 2012 is 10 points higher than the previ-\nous state-of-the-art result [6].\nImageNet Detection\nThe ImageNet Detection (DET) task involves 200 object\ncategories. The accuracy is evaluated by mAP@.5. Our\nobject detection algorithm for ImageNet DET is the same\nas that for MS COCO in Table 9. The networks are pre-\ntrained on the 1000-class ImageNet classiﬁcation set, and\nare ﬁne-tuned on the DET data. We split the validation set\ninto two parts (val1/val2) following [8]. We ﬁne-tune the\ndetection models using the DET training set and the val1\nset. The val2 set is used for validation. We do not use other\nILSVRC 2015 data. Our single model with ResNet-101 has\n6http://host.robots.ox.ac.uk:8080/anonymous/3OJ4OJ.html,\nsubmitted on 20"
+        }
+      ]
+    },
+    {
+      "id": "resnet-dev-004",
+      "question": "How does the network pass its input around stacked layers and combine it with their output?",
+      "answerable": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 3,
+          "chunk_number": 1,
+          "score": 13.427187324578838,
+          "content": "way networks have not demonstrated accuracy gains with\nextremely increased depth (e.g., over 100 layers).\n3. Deep Residual Learning\n3.1. Residual Learning\nLet us consider H(x) as an underlying mapping to be\nﬁt by a few stacked layers (not necessarily the entire net),\nwith x denoting the inputs to the ﬁrst of these layers. If one\nhypothesizes that multiple nonlinear layers can asymptoti-\ncally approximate complicated functions 2, then it is equiv-\nalent to hypothesize that they can asymptotically approxi-\nmate the residual functions, i.e.,H(x)− x (assuming that\nthe input and output are of the same dimensions). So\nrather than expect stacked layers to approximateH(x), we\nexplicitly let these layers approximate a residual function\nF (x) := H(x)− x. The original function thus becomes\nF (x)+ x. Although both forms should be able to asymptot-\nically approximate the desired functions (as hypothesized),\nthe ease of learning might be different.\nThis reformulation is motivated by the counterintui"
+        },
+        {
+          "rank": 2,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 10,
+          "chunk_number": 5,
+          "score": 13.26732590208126,
+          "content": "eport the improvements made for\nthe competitions. These improvements are based on deep\nfeatures and thus should beneﬁt from residual learning.\nMS COCO\nBox reﬁnement. Our box reﬁnement partially follows the it-\nerative localization in [6]. In Faster R-CNN, the ﬁnal output\nis a regressed box that is different from its proposal box. So\nfor inference, we pool a new feature from the regressed box\nand obtain a new classiﬁcation score and a new regressed\nbox. We combine these 300 new predictions with the orig-\ninal 300 predictions. Non-maximum suppression (NMS) is\napplied on the union set of predicted boxes using an IoU\nthreshold of 0.3 [8], followed by box voting [6]. Box re-\nﬁnement improves mAP by about 2 points (Table 9).\nGlobal context. We combine global context in the Fast\nR-CNN step. Given the full-image conv feature map, we\npool a feature by global Spatial Pyramid Pooling [12] (with\na “single-level” pyramid) which can be implemented as\n“RoI” pooling using the entire image’s bounding b"
+        },
+        {
+          "rank": 3,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 3,
+          "chunk_number": 3,
+          "score": 12.081748047544052,
+          "content": "problem. If the optimal function is closer to an identity\nmapping than to a zero mapping, it should be easier for the\nsolver to ﬁnd the perturbations with reference to an identity\nmapping, than to learn the function as a new one. We show\nby experiments (Fig. 7) that the learned residual functions in\ngeneral have small responses, suggesting that identity map-\npings provide reasonable preconditioning.\n3.2. Identity Mapping by Shortcuts\nWe adopt residual learning to every few stacked layers.\nA building block is shown in Fig. 2. Formally, in this paper\nwe consider a building block deﬁned as:\ny =F (x,{Wi}) + x. (1)\nHere x and y are the input and output vectors of the lay-\ners considered. The function F (x,{Wi}) represents the\nresidual mapping to be learned. For the example in Fig. 2\nthat has two layers, F = W2σ(W1x) in which σ denotes\n2This hypothesis, however, is still an open question. See [28].\nReLU [29] and the biases are omitted for simplifying no-\ntations. The operation F + x is perfo"
+        }
+      ]
+    },
+    {
+      "id": "resnet-dev-005",
+      "question": "What ImageNet accuracy does this paper report for a Vision Transformer?",
+      "answerable": false,
+      "retrieved": [
+        {
+          "rank": 1,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 2,
+          "chunk_number": 4,
+          "score": 8.58745990890954,
+          "content": "e\nImageNet test set, and won the 1st place in the ILSVRC\n2015 classiﬁcation competition . The extremely deep rep-\nresentations also have excellent generalization performance\non other recognition tasks, and lead us to further win the\n1st places on: ImageNet detection, ImageNet localization,\nCOCO detection, and COCO segmentation in ILSVRC &\nCOCO 2015 competitions. This strong evidence shows that\nthe residual learning principle is generic, and we expect that\nit is applicable in other vision and non-vision problems.\n2. Related Work\nResidual Representations. In image recognition, VLAD\n[18] is a representation that encodes by the residual vectors\nwith respect to a dictionary, and Fisher Vector [30] can be\nformulated as a probabilistic version [18] of VLAD. Both\nof them are powerful shallow representations for image re-\ntrieval and classiﬁcation [4, 48]. For vector quantization,\nencoding residual vectors [17] is shown to be more effec-\ntive than encoding original vectors.\nIn low-level vision "
+        },
+        {
+          "rank": 2,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 6,
+          "chunk_number": 4,
+          "score": 6.136450013720756,
+          "content": "counterpart. B is slightly better than A. We\nargue that this is because the zero-padded dimensions in A\nindeed have no residual learning. C is marginally better than\nB, and we attribute this to the extra parameters introduced\nby many (thirteen) projection shortcuts. But the small dif-\nferences among A/B/C indicate that projection shortcuts are\nnot essential for addressing the degradation problem. So we\ndo not use option C in the rest of this paper, to reduce mem-\nory/time complexity and model sizes. Identity shortcuts are\nparticularly important for not increasing the complexity of\nthe bottleneck architectures that are introduced below.\nDeeper Bottleneck Architectures. Next we describe our\ndeeper nets for ImageNet. Because of concerns on the train-\ning time that we can afford, we modify the building block\nas a bottleneck design4. For each residual function F, we\nuse a stack of 3 layers instead of 2 (Fig. 5). The three layers\nare 1×1, 3×3, and 1×1 convolutions, where the 1×1 layers\nare r"
+        },
+        {
+          "rank": 3,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 9,
+          "chunk_number": 3,
+          "score": 5.58229869911226,
+          "content": "eural networks by preventing co-\nadaptation of feature detectors. arXiv:1207.0580, 2012.\n[15] S. Hochreiter and J. Schmidhuber. Long short-term memory. Neural\ncomputation, 9(8):1735–1780, 1997.\n[16] S. Ioffe and C. Szegedy. Batch normalization: Accelerating deep\nnetwork training by reducing internal covariate shift. InICML, 2015.\n[17] H. Jegou, M. Douze, and C. Schmid. Product quantization for nearest\nneighbor search. TPAMI, 33, 2011.\n[18] H. Jegou, F. Perronnin, M. Douze, J. Sanchez, P. Perez, and\nC. Schmid. Aggregating local image descriptors into compact codes.\nTPAMI, 2012.\n[19] Y . Jia, E. Shelhamer, J. Donahue, S. Karayev, J. Long, R. Girshick,\nS. Guadarrama, and T. Darrell. Caffe: Convolutional architecture for\nfast feature embedding. arXiv:1408.5093, 2014.\n[20] A. Krizhevsky. Learning multiple layers of features from tiny im-\nages. Tech Report, 2009.\n[21] A. Krizhevsky, I. Sutskever, and G. Hinton. Imagenet classiﬁcation\nwith deep convolutional neural networks. In NIPS, 2012.\n[2"
+        }
+      ]
+    }
+  ]
+}
