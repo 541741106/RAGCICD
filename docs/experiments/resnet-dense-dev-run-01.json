@@ -1,0 +1,172 @@
+{
+  "dataset": "data/evaluation/resnet-dev.json",
+  "paper_id": "arxiv:1512.03385v1",
+  "haystack_version": "3.3.0",
+  "google_genai_version": "2.31.0",
+  "retriever": "InMemoryEmbeddingRetriever",
+  "embedding_model": "gemini-embedding-001",
+  "dimensions": 768,
+  "document_task_type": "RETRIEVAL_DOCUMENT",
+  "query_task_type": "RETRIEVAL_QUERY",
+  "similarity": "cosine",
+  "chunk_size": 1000,
+  "overlap": 150,
+  "top_k": 3,
+  "results": [
+    {
+      "id": "resnet-dev-001",
+      "question": "What are identity shortcut connections?",
+      "answerable": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 2,
+          "chunk_number": 6,
+          "score": 0.7577225657774845,
+          "content": "ons. Practices and theories that lead to\nshortcut connections [2, 34, 49] have been studied for a long\ntime. An early practice of training multi-layer perceptrons\n(MLPs) is to add a linear layer connected from the network\ninput to the output [34, 49]. In [44, 24], a few interme-\ndiate layers are directly connected to auxiliary classiﬁers\nfor addressing vanishing/exploding gradients. The papers\nof [39, 38, 31, 47] propose methods for centering layer re-\nsponses, gradients, and propagated errors, implemented by\nshortcut connections. In [44], an “inception” layer is com-\nposed of a shortcut branch and a few deeper branches.\nConcurrent with our work, “highway networks” [42, 43]\npresent shortcut connections with gating functions [15].\nThese gates are data-dependent and have parameters, in\ncontrast to our identity shortcuts that are parameter-free.\nWhen a gated shortcut is “closed” (approaching zero), the\nlayers in highway networks represent non-residual func-\ntions. On the contrary, our for"
+        },
+        {
+          "rank": 2,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 2,
+          "chunk_number": 2,
+          "score": 0.738938379522828,
+          "content": "han to ﬁt an identity mapping by a stack\nof nonlinear layers.\nThe formulation ofF (x) +x can be realized by feedfor-\nward neural networks with “shortcut connections” (Fig. 2).\nShortcut connections [2, 34, 49] are those skipping one or\nmore layers. In our case, the shortcut connections simply\nperform identity mapping, and their outputs are added to\nthe outputs of the stacked layers (Fig. 2). Identity short-\ncut connections add neither extra parameter nor computa-\ntional complexity. The entire network can still be trained\nend-to-end by SGD with backpropagation, and can be eas-\nily implemented using common libraries ( e.g., Caffe [19])\nwithout modifying the solvers.\nWe present comprehensive experiments on ImageNet\n[36] to show the degradation problem and evaluate our\nmethod. We show that: 1) Our extremely deep residual nets\nare easy to optimize, but the counterpart “plain” nets (that\nsimply stack layers) exhibit higher training error when the\ndepth increases; 2) Our deep residual nets can"
+        },
+        {
+          "rank": 3,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 6,
+          "chunk_number": 3,
+          "score": 0.7187765283702122,
+          "content": "ver-\ngence at the early stage.\nIdentity vs. Projection Shortcuts. We have shown that\n3x3, 64\n1x1, 64\nrelu\n1x1, 256\nrelu\nrelu\n3x3, 64\n3x3, 64\nrelu\nrelu\n64-d 256-d\nFigure 5. A deeper residual function F for ImageNet. Left: a\nbuilding block (on 56×56 feature maps) as in Fig. 3 for ResNet-\n34. Right: a “bottleneck” building block for ResNet-50/101/152.\nparameter-free, identity shortcuts help with training. Next\nwe investigate projection shortcuts (Eqn.(2)). In Table 3 we\ncompare three options: (A) zero-padding shortcuts are used\nfor increasing dimensions, and all shortcuts are parameter-\nfree (the same as Table 2 and Fig. 4 right); (B) projec-\ntion shortcuts are used for increasing dimensions, and other\nshortcuts are identity; and (C) all shortcuts are projections.\nTable 3 shows that all three options are considerably bet-\nter than the plain counterpart. B is slightly better than A. We\nargue that this is because the zero-padded dimensions in A\nindeed have no residual learning. C is margina"
+        }
+      ]
+    },
+    {
+      "id": "resnet-dev-002",
+      "question": "What is the degradation problem described in the paper?",
+      "answerable": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 1,
+          "chunk_number": 5,
+          "score": 0.7097756555959489,
+          "content": "y. Unexpectedly,\nsuch degradation is not caused by overﬁtting , and adding\nmore layers to a suitably deep model leads to higher train-\ning error, as reported in [11, 42] and thoroughly veriﬁed by\nour experiments. Fig. 1 shows a typical example.\nThe degradation (of training accuracy) indicates that not\nall systems are similarly easy to optimize. Let us consider a\nshallower architecture and its deeper counterpart that adds\nmore layers onto it. There exists a solution by construction\nto the deeper model: the added layers are identity mapping,\nand the other layers are copied from the learned shallower\nmodel. The existence of this constructed solution indicates\nthat a deeper model should produce no higher training error\nthan its shallower counterpart. But experiments show that\nour current solvers on hand are unable to ﬁnd solutions that\n1\narXiv:1512.03385v1  [cs.CV]  10 Dec 2015"
+        },
+        {
+          "rank": 2,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 3,
+          "chunk_number": 2,
+          "score": 0.6894543822655994,
+          "content": "ally approximate the desired functions (as hypothesized),\nthe ease of learning might be different.\nThis reformulation is motivated by the counterintuitive\nphenomena about the degradation problem (Fig. 1, left). As\nwe discussed in the introduction, if the added layers can\nbe constructed as identity mappings, a deeper model should\nhave training error no greater than its shallower counter-\npart. The degradation problem suggests that the solvers\nmight have difﬁculties in approximating identity mappings\nby multiple nonlinear layers. With the residual learning re-\nformulation, if identity mappings are optimal, the solvers\nmay simply drive the weights of the multiple nonlinear lay-\ners toward zero to approach identity mappings.\nIn real cases, it is unlikely that identity mappings are op-\ntimal, but our reformulation may help to precondition the\nproblem. If the optimal function is closer to an identity\nmapping than to a zero mapping, it should be easier for the\nsolver to ﬁnd the perturbations "
+        },
+        {
+          "rank": 3,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 1,
+          "chunk_number": 4,
+          "score": 0.6883189645861163,
+          "content": " test error. Similar phenomena\non ImageNet is presented in Fig. 4.\ngreatly beneﬁted from very deep models.\nDriven by the signiﬁcance of depth, a question arises: Is\nlearning better networks as easy as stacking more layers?\nAn obstacle to answering this question was the notorious\nproblem of vanishing/exploding gradients [1, 9], which\nhamper convergence from the beginning. This problem,\nhowever, has been largely addressed by normalized initial-\nization [23, 9, 37, 13] and intermediate normalization layers\n[16], which enable networks with tens of layers to start con-\nverging for stochastic gradient descent (SGD) with back-\npropagation [22].\nWhen deeper networks are able to start converging, a\ndegradation problem has been exposed: with the network\ndepth increasing, accuracy gets saturated (which might be\nunsurprising) and then degrades rapidly. Unexpectedly,\nsuch degradation is not caused by overﬁtting , and adding\nmore layers to a suitably deep model leads to higher train-\ning error, as r"
+        }
+      ]
+    },
+    {
+      "id": "resnet-dev-003",
+      "question": "How deep is the largest network evaluated on ImageNet in this paper?",
+      "answerable": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 4,
+          "chunk_number": 5,
+          "score": 0.780217291032587,
+          "content": ".\nIn testing, for comparison studies we adopt the standard\n10-crop testing [21]. For best results, we adopt the fully-\nconvolutional form as in [41, 13], and average the scores\nat multiple scales (images are resized such that the shorter\nside is in{224, 256, 384, 480, 640}).\n4. Experiments\n4.1. ImageNet Classiﬁcation\nWe evaluate our method on the ImageNet 2012 classiﬁ-\ncation dataset [36] that consists of 1000 classes. The models\nare trained on the 1.28 million training images, and evalu-\nated on the 50k validation images. We also obtain a ﬁnal\nresult on the 100k test images, reported by the test server.\nWe evaluate both top-1 and top-5 error rates.\nPlain Networks. We ﬁrst evaluate 18-layer and 34-layer\nplain nets. The 34-layer plain net is in Fig. 3 (middle). The\n18-layer plain net is of a similar form. See Table 1 for de-\ntailed architectures.\nThe results in Table 2 show that the deeper 34-layer plain\nnet has higher validation error than the shallower 18-layer\nplain net. To reveal th"
+        },
+        {
+          "rank": 2,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 5,
+          "chunk_number": 1,
+          "score": 0.7758857486732857,
+          "content": "layer name output size 18-layer 34-layer 50-layer 101-layer 152-layer\nconv1 112×112 7×7, 64, stride 2\nconv2 x 56×56\n3×3 max pool, stride 2\n[\n3×3, 64\n3×3, 64\n]\n×2\n[\n3×3, 64\n3×3, 64\n]\n×3\n\n\n1×1, 64\n3×3, 64\n1×1, 256\n\n×3\n\n\n1×1, 64\n3×3, 64\n1×1, 256\n\n×3\n\n\n1×1, 64\n3×3, 64\n1×1, 256\n\n×3\nconv3 x 28×28\n[\n3×3, 128\n3×3, 128\n]\n×2\n[\n3×3, 128\n3×3, 128\n]\n×4\n\n\n1×1, 128\n3×3, 128\n1×1, 512\n\n×4\n\n\n1×1, 128\n3×3, 128\n1×1, 512\n\n×4\n\n\n1×1, 128\n3×3, 128\n1×1, 512\n\n×8\nconv4 x 14×14\n[\n3×3, 256\n3×3, 256\n]\n×2\n[\n3×3, 256\n3×3, 256\n]\n×6\n\n\n1×1, 256\n3×3, 256\n1×1, 1024\n\n×6\n\n\n1×1, 256\n3×3, 256\n1×1, 1024\n\n×23\n\n\n1×1, 256\n3×3, 256\n1×1, 1024\n\n×36\nconv5 x 7×7\n[\n3×3, 512\n3×3, 512\n]\n×2\n[\n3×3, 512\n3×3, 512\n]\n×3\n\n\n1×1, 512\n3×3, 512\n1×1, 2048\n\n×3\n\n\n1×1, 512\n3×3, 512\n1×1, 2048\n\n×3\n\n\n1×1, 512\n3×3, 512\n1×1, 2048\n\n×3\n1×1 average pool, 1000-d fc, softmax\nFLOPs 1.8×109 3.6×109 3.8×109 7.6×109 11.3×109\nTable 1. Architectures for ImageNet. Building blocks are shown in brackets (see also Fig. 5), w"
+        },
+        {
+          "rank": 3,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 2,
+          "chunk_number": 3,
+          "score": 0.7720190992679075,
+          "content": "ize, but the counterpart “plain” nets (that\nsimply stack layers) exhibit higher training error when the\ndepth increases; 2) Our deep residual nets can easily enjoy\naccuracy gains from greatly increased depth, producing re-\nsults substantially better than previous networks.\nSimilar phenomena are also shown on the CIFAR-10 set\n[20], suggesting that the optimization difﬁculties and the\neffects of our method are not just akin to a particular dataset.\nWe present successfully trained models on this dataset with\nover 100 layers, and explore models with over 1000 layers.\nOn the ImageNet classiﬁcation dataset [36], we obtain\nexcellent results by extremely deep residual nets. Our 152-\nlayer residual net is the deepest network ever presented on\nImageNet, while still having lower complexity than VGG\nnets [41]. Our ensemble has 3.57% top-5 error on the\nImageNet test set, and won the 1st place in the ILSVRC\n2015 classiﬁcation competition . The extremely deep rep-\nresentations also have excellent gen"
+        }
+      ]
+    },
+    {
+      "id": "resnet-dev-004",
+      "question": "How does the network pass its input around stacked layers and combine it with their output?",
+      "answerable": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 3,
+          "chunk_number": 3,
+          "score": 0.6806470451806637,
+          "content": "problem. If the optimal function is closer to an identity\nmapping than to a zero mapping, it should be easier for the\nsolver to ﬁnd the perturbations with reference to an identity\nmapping, than to learn the function as a new one. We show\nby experiments (Fig. 7) that the learned residual functions in\ngeneral have small responses, suggesting that identity map-\npings provide reasonable preconditioning.\n3.2. Identity Mapping by Shortcuts\nWe adopt residual learning to every few stacked layers.\nA building block is shown in Fig. 2. Formally, in this paper\nwe consider a building block deﬁned as:\ny =F (x,{Wi}) + x. (1)\nHere x and y are the input and output vectors of the lay-\ners considered. The function F (x,{Wi}) represents the\nresidual mapping to be learned. For the example in Fig. 2\nthat has two layers, F = W2σ(W1x) in which σ denotes\n2This hypothesis, however, is still an open question. See [28].\nReLU [29] and the biases are omitted for simplifying no-\ntations. The operation F + x is perfo"
+        },
+        {
+          "rank": 2,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 3,
+          "chunk_number": 5,
+          "score": 0.6765549662237612,
+          "content": "tion Ws by the\nshortcut connections to match the dimensions:\ny =F (x,{Wi}) +Wsx. (2)\nWe can also use a square matrixWs in Eqn.(1). But we will\nshow by experiments that the identity mapping is sufﬁcient\nfor addressing the degradation problem and is economical,\nand thusWs is only used when matching dimensions.\nThe form of the residual function F is ﬂexible. Exper-\niments in this paper involve a function F that has two or\nthree layers (Fig. 5), while more layers are possible. But if\nF has only a single layer, Eqn.(1) is similar to a linear layer:\ny =W1x + x, for which we have not observed advantages.\nWe also note that although the above notations are about\nfully-connected layers for simplicity, they are applicable to\nconvolutional layers. The function F (x,{Wi}) can repre-\nsent multiple convolutional layers. The element-wise addi-\ntion is performed on two feature maps, channel by channel.\n3.3. Network Architectures\nWe have tested various plain/residual nets, and have ob-\nserved consistent"
+        },
+        {
+          "rank": 3,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 2,
+          "chunk_number": 6,
+          "score": 0.672016881791324,
+          "content": "ons. Practices and theories that lead to\nshortcut connections [2, 34, 49] have been studied for a long\ntime. An early practice of training multi-layer perceptrons\n(MLPs) is to add a linear layer connected from the network\ninput to the output [34, 49]. In [44, 24], a few interme-\ndiate layers are directly connected to auxiliary classiﬁers\nfor addressing vanishing/exploding gradients. The papers\nof [39, 38, 31, 47] propose methods for centering layer re-\nsponses, gradients, and propagated errors, implemented by\nshortcut connections. In [44], an “inception” layer is com-\nposed of a shortcut branch and a few deeper branches.\nConcurrent with our work, “highway networks” [42, 43]\npresent shortcut connections with gating functions [15].\nThese gates are data-dependent and have parameters, in\ncontrast to our identity shortcuts that are parameter-free.\nWhen a gated shortcut is “closed” (approaching zero), the\nlayers in highway networks represent non-residual func-\ntions. On the contrary, our for"
+        }
+      ]
+    },
+    {
+      "id": "resnet-dev-005",
+      "question": "What ImageNet accuracy does this paper report for a Vision Transformer?",
+      "answerable": false,
+      "retrieved": [
+        {
+          "rank": 1,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 6,
+          "chunk_number": 1,
+          "score": 0.6895086146371072,
+          "content": "model top-1 err. top-5 err.\nVGG-16 [41] 28.07 9.33\nGoogLeNet [44] - 9.15\nPReLU-net [13] 24.27 7.38\nplain-34 28.54 10.02\nResNet-34 A 25.03 7.76\nResNet-34 B 24.52 7.46\nResNet-34 C 24.19 7.40\nResNet-50 22.85 6.71\nResNet-101 21.75 6.05\nResNet-152 21.43 5.71\nTable 3. Error rates (%, 10-crop testing) on ImageNet validation.\nVGG-16 is based on our test. ResNet-50/101/152 are of option B\nthat only uses projections for increasing dimensions.\nmethod top-1 err. top-5 err.\nVGG [41] (ILSVRC’14) - 8.43 †\nGoogLeNet [44] (ILSVRC’14) - 7.89\nVGG [41] (v5) 24.4 7.1\nPReLU-net [13] 21.59 5.71\nBN-inception [16] 21.99 5.81\nResNet-34 B 21.84 5.71\nResNet-34 C 21.53 5.60\nResNet-50 20.74 5.25\nResNet-101 19.87 4.60\nResNet-152 19.38 4.49\nTable 4. Error rates (%) of single-model results on the ImageNet\nvalidation set (except † reported on the test set).\nmethod top-5 err. (test)\nVGG [41] (ILSVRC’14) 7.32\nGoogLeNet [44] (ILSVRC’14) 6.66\nVGG [41] (v5) 6.8\nPReLU-net [13] 4.94\nBN-inception [16] 4.82\nResNet (ILSVRC’15) 3"
+        },
+        {
+          "rank": 2,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 12,
+          "chunk_number": 7,
+          "score": 0.6847245907964139,
+          "content": "ization error to\n10.6% (Table 13). This is our single-model result on the\nvalidation set. Using an ensemble of networks for both clas-\nsiﬁcation and localization, we achieve a top-5 localization\nerror of 9.0% on the test set. This number signiﬁcantly out-\nperforms the ILSVRC 14 results (Table 14), showing a 64%\nrelative reduction of error. This result won the 1st place in\nthe ImageNet localization task in ILSVRC 2015.\n12"
+        },
+        {
+          "rank": 3,
+          "paper_id": "arxiv:1512.03385v1",
+          "page_number": 4,
+          "chunk_number": 5,
+          "score": 0.6828522554078519,
+          "content": ".\nIn testing, for comparison studies we adopt the standard\n10-crop testing [21]. For best results, we adopt the fully-\nconvolutional form as in [41, 13], and average the scores\nat multiple scales (images are resized such that the shorter\nside is in{224, 256, 384, 480, 640}).\n4. Experiments\n4.1. ImageNet Classiﬁcation\nWe evaluate our method on the ImageNet 2012 classiﬁ-\ncation dataset [36] that consists of 1000 classes. The models\nare trained on the 1.28 million training images, and evalu-\nated on the 50k validation images. We also obtain a ﬁnal\nresult on the 100k test images, reported by the test server.\nWe evaluate both top-1 and top-5 error rates.\nPlain Networks. We ﬁrst evaluate 18-layer and 34-layer\nplain nets. The 34-layer plain net is in Fig. 3 (middle). The\n18-layer plain net is of a similar form. See Table 1 for de-\ntailed architectures.\nThe results in Table 2 show that the deeper 34-layer plain\nnet has higher validation error than the shallower 18-layer\nplain net. To reveal th"
+        }
+      ]
+    }
+  ]
+}

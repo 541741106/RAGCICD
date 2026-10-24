@@ -151,7 +151,6 @@ ligatures, missing spaces, and figure labels. Scanned PDFs are not supported.
 See [the experiment record](docs/experiments/resnet-ingestion.md)
 for observed results and limitations.
 
-
 ## Run the HTTP API
 
 Install the project using the Development Setup instructions above.
@@ -202,3 +201,33 @@ replace the client dependency and do not call Gemini.
 The API has no caller authentication or rate limiting and is intended
 for local development. Other provider errors are not yet mapped to
 specific HTTP responses.
+
+
+## Dense Retrieval Pilot
+
+The dense retrieval experiment uses `gemini-embedding-001`,
+768-dimensional document/query embeddings, and cosine similarity.
+It remains separate from the CLI and HTTP question-answering paths.
+
+The experiment requires the ResNet PDF and two local caches:
+
+- `data/index/resnet-document-embeddings.json`
+- `data/index/resnet-query-embeddings.json`
+
+Caches are excluded from Git. Fresh clones must generate them using
+`load_or_embed_texts` with the document and query task types respectively.
+Generating embeddings consumes API quota.
+
+From the repository root, with the project installed and
+`GEMINI_API_KEY` configured, repeat retrieval using matching caches:
+
+```bat
+python -m llmrag.dense_experiment --output docs/experiments/resnet-dense-dev-run-02.json
+```
+
+Choose a new output filename if it already exists.
+The runner requires both cache files and rejects mismatched cached inputs.
+It does not perform answer generation or automatic evidence scoring.
+
+See the [pilot comparison](docs/experiments/resnet-bm25-vs-dense.md)
+for configuration, manual judgments, results, and limitations.

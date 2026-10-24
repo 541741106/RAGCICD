@@ -1,0 +1,36 @@
+{
+  "run_file": "docs/experiments/resnet-dense-dev-run-01.json",
+  "reviewed_top_k": 3,
+  "reviews": [
+    {
+        "id": "resnet-dev-001",
+        "label": "sufficient",
+        "supporting_ranks": [2],
+        "reason": "Rank 2 directly supports the shortcut definition, identity mapping, addition to stacked-layer outputs, and absence of extra shortcut parameters or computational complexity."
+    },
+    {
+        "id": "resnet-dev-002",
+        "label": "sufficient",
+        "supporting_ranks": [1, 3],
+        "reason": "Ranks 1 and 3 jointly explain accuracy saturation and degradation, increased training error with additional layers, and the distinction from overfitting."
+    },
+    {
+        "id": "resnet-dev-003",
+        "label": "sufficient",
+        "supporting_ranks": [2, 3],
+        "reason": "Rank 3 explicitly identifies the 152-layer residual network as the deepest presented on ImageNet and distinguishes it from deeper CIFAR-10 models. Rank 2 corroborates this with the ImageNet architecture table listing depths up to 152."
+    },
+    {
+        "id": "resnet-dev-004",
+        "label": "sufficient",
+        "supporting_ranks": [1, 2],
+        "reason": "Rank 1 defines the input and residual mapping in y=F(x)+x. Rank 2 explicitly describes element-wise addition, jointly supporting the requested bypass and combination mechanism."
+    },
+    {
+        "id": "resnet-dev-005",
+        "label": "not_applicable",
+        "supporting_ranks": [],
+        "reason": "The retrieved passages discuss other models and ImageNet experiments but provide no Vision Transformer accuracy result. This question is annotated as unanswerable. Generation and refusal behavior were not evaluated."
+    }
+  ]
+}
