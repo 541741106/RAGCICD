@@ -7,7 +7,7 @@ from google import genai
 from llmrag.rag import RagResult, answer_question
 from llmrag.schemas import AskRequest, AskResponse, EvidenceResponse
 
-app = FastAPI(title="CV Paper Research Assistant")
+app = FastAPI(title="PaperTrace — Evidence-Grounded Research Assistant")
 
 
 @app.get("/health")

@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "llmrag-test"
+name = "papertrace"
 version = "0.1.0"
-description = "An evaluated RAG system for research papers"
+description = "PaperTrace: an evidence-grounded RAG assistant for research papers"
 requires-python = ">=3.11"
 
 dependencies = [
@@ -16,6 +16,8 @@ dependencies = [
     "fastapi==0.146.0",
     "pydantic==2.14.1",
     "uvicorn==0.54.0",
+    "pgvector-haystack==8.1.2",
+    "python-dotenv==1.2.4",
 ]
 
 [project.optional-dependencies]

@@ -2,6 +2,9 @@ from haystack.components.retrievers.in_memory import (
     InMemoryBM25Retriever,
     InMemoryEmbeddingRetriever,
 )
+from haystack_integrations.components.retrievers.pgvector import (
+    PgvectorEmbeddingRetriever,
+)
 
 
 def collect_retrieval_results(
@@ -48,7 +51,7 @@ def collect_dense_retrieval_results(
     cases: list[dict],
     query_vectors: list[list[float]],
     *,
-    retriever: InMemoryEmbeddingRetriever,
+    retriever: InMemoryEmbeddingRetriever | PgvectorEmbeddingRetriever,
     top_k: int = 3,
 ) -> list[dict]:
     """Collect ranked dense-retrieval evidence in question order."""
