@@ -1,4 +1,9 @@
-# CV Paper Research Assistant
+# PaperTrace
+
+Evidence-Grounded Research Assistant for Computer Vision Papers.
+
+The Python distribution is named `papertrace`; the import package and Conda
+environment remain `llmrag`.
 
 ## Project Goals
 
@@ -70,13 +75,21 @@ The system should avoid fabricating research findings, experimental results, or 
 - [X]  GitHub Actions lint, formatting, and test checks.
 - [X]  Text-based PDF parsing and page-preserving character chunking.
 - [X]  In-memory BM25 retrieval and question answering over a supplied PDF.
+- [X]  FastAPI health and synthetic question-answering endpoints.
+- [X]  Small ResNet development-set comparison of BM25 and cached dense retrieval.
+- [X]  PostgreSQL/pgvector storage and a repeatable cache-only ResNet import command.
+- [X]  Manual comparison of pgvector and in-memory dense top-3 evidence on five questions.
 
 ### Planned / Not Yet Implemented
 
-- [ ]  Evaluate retrieval and generation on real papers.
+- [ ]  Broader retrieval evaluation and systematic generation evaluation on real papers.
+- [ ]  Connect persistent dense retrieval to the question-answering paths.
 - [ ]  Validate citations against source evidence.
 
-The project supports a synthetic demo and a single text-based PDF RAG workflow. Persistent storage, OCR, systematic evaluation, and automatic citation validation are not yet implemented.
+The project supports a synthetic demo and a single text-based PDF RAG workflow.
+Persistent dense retrieval is implemented separately from the CLI and HTTP
+question-answering paths. OCR, broad evaluation, and automatic citation
+validation are not yet implemented.
 
 ## Development Setup
 
@@ -231,3 +244,76 @@ It does not perform answer generation or automatic evidence scoring.
 
 See the [pilot comparison](docs/experiments/resnet-bm25-vs-dense.md)
 for configuration, manual judgments, results, and limitations.
+
+## Persistent Storage with PostgreSQL and pgvector
+
+Run these commands from the repository root with Docker Desktop running.
+The configuration uses PostgreSQL 17 and pgvector 0.8.7, exposed locally at
+`127.0.0.1:5433`.
+
+Create or update the local, Git-ignored `.env` file without removing any
+existing settings. For a password containing only letters and digits, use:
+
+```dotenv
+POSTGRES_PASSWORD=REPLACE_WITH_YOUR_LOCAL_PASSWORD
+PG_CONN_STR="host=127.0.0.1 port=5433 dbname=papertrace user=papertrace_app password=${POSTGRES_PASSWORD} connect_timeout=5"
+```
+
+For passwords containing spaces, quotes, or backslashes, construct a properly
+escaped connection string with `psycopg.conninfo.make_conninfo` instead of
+using this simple template. Do not commit or print the resulting credentials.
+The import command loads `.env` with `override=False`, so existing process
+environment variables take precedence.
+
+```bat
+docker compose config --quiet
+docker compose up -d db
+docker compose exec db psql -U papertrace_app -d papertrace -c "CREATE EXTENSION IF NOT EXISTS vector;"
+```
+
+The named volume `papertrace_postgres_data` preserves data across normal
+container recreation and computer restarts. `docker compose down` preserves
+the volume; `docker compose down -v` deletes it. Initialization credentials
+apply to a new data directory; editing `.env` does not change an existing
+database user's password.
+
+### Import the existing ResNet embeddings
+
+Install the project and provide the ResNet PDF and matching document cache
+described above, then run:
+
+```bat
+python -m llmrag.pgvector_ingestion
+```
+
+The command extracts and chunks the PDF using 1000 characters and 150-character
+overlap, validates the existing `gemini-embedding-001` document cache, and writes
+768-dimensional embeddings and source metadata to `resnet_gemini_768_v1`.
+It does not request new embeddings or call an answer-generation model.
+A fresh clone needs the PDF and a separately generated cache before importing.
+
+For the current corpus, the observed output is:
+
+```text
+Written: 75
+Stored documents: 75
+```
+
+Matching document IDs are overwritten on repeated imports. Old IDs are not
+removed if the PDF or chunking configuration changes. The current table is
+dedicated to this experiment, not a general index-version management system.
+
+### Verification and current limits
+
+The store uses cosine similarity and exact nearest-neighbor search. A manual
+five-question comparison found identical ordered top-3 evidence to the
+in-memory dense baseline, excluding floating-point scores from comparison.
+See the [storage verification record](docs/experiments/resnet-pgvector-storage.md)
+and [raw results](docs/experiments/resnet-pgvector-dev-run-01.json).
+
+This is a storage migration check, not a new answer-accuracy measurement.
+The pgvector query/comparison sequence is not yet packaged as a command.
+`POST /ask` still uses synthetic documents, and the PDF QA CLI still rebuilds
+its in-memory BM25 index. Automated tests mock database writes and do not
+require Docker or Gemini credentials; they do not replace the manual database
+integration checks recorded here.
