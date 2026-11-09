@@ -67,3 +67,36 @@ jobs:
       - name: Remove API container
         if: always()
         run: docker rm -f papertrace-api-ci
+
+  publish-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    needs: [checks, container-smoke]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    permissions:
+      contents: read
+      packages: write
+
+    env:
+      IMAGE: ghcr.io/541741106/papertrace-api:sha-${{ github.sha }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_ACTOR: ${{ github.actor }}
+        run: |
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io \
+            --username "$GH_ACTOR" \
+            --password-stdin
+
+      - name: Build release image
+        run: docker build -t "$IMAGE" .
+
+      - name: Publish release image
+        run: docker push "$IMAGE"
