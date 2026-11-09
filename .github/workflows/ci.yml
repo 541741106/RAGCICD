@@ -32,3 +32,38 @@ jobs:
 
       - name: Run tests
         run: python -m pytest -q
+
+  container-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build API image
+        run: docker build -t papertrace-api:ci .
+
+      - name: Start API container
+        run: |
+          docker run -d \
+            --name papertrace-api-ci \
+            -p 127.0.0.1:8001:8000 \
+            papertrace-api:ci
+
+      - name: Check HTTP health
+        run: |
+          curl --fail --silent --show-error \
+            --retry 20 --retry-all-errors --retry-delay 2 \
+            --max-time 3 \
+            http://127.0.0.1:8001/health \
+            --output health.json
+          python3 -c "import json; from pathlib import Path; assert json.loads(Path('health.json').read_text()) == {'status': 'OK'}"
+
+      - name: Show container logs
+        if: always()
+        run: docker logs papertrace-api-ci
+
+      - name: Remove API container
+        if: always()
+        run: docker rm -f papertrace-api-ci
