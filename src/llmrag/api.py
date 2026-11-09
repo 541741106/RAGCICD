@@ -3,9 +3,13 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException
 from google import genai
+from haystack_integrations.components.retrievers.pgvector import (
+    PgvectorEmbeddingRetriever,
+)
 
-from llmrag.rag import RagResult, answer_question
+from llmrag.rag import RagResult, answer_question_with_pgvector
 from llmrag.schemas import AskRequest, AskResponse, EvidenceResponse
+from llmrag.storage import open_document_store
 
 app = FastAPI(title="PaperTrace — Evidence-Grounded Research Assistant")
 
@@ -42,21 +46,37 @@ def get_client() -> Iterator[genai.Client]:
         yield client
 
 
+def get_retriever() -> Iterator[PgvectorEmbeddingRetriever]:
+    """Provide a database retriever and release request resources."""
+    store = open_document_store()
+
+    try:
+        retriever = PgvectorEmbeddingRetriever(document_store=store)
+        yield retriever
+    finally:
+        store.close()
+
+
 @app.post("/ask", response_model=AskResponse)
 def ask(
     request: AskRequest,
     client: Annotated[genai.Client, Depends(get_client)],
+    retriever: Annotated[
+        PgvectorEmbeddingRetriever,
+        Depends(get_retriever),
+    ],
 ) -> AskResponse:
     try:
-        result = answer_question(
+        result = answer_question_with_pgvector(
             request.question,
             client=client,
+            retriever=retriever,
             top_k=request.top_k,
         )
     except RuntimeError as error:
         raise HTTPException(
             status_code=502,
-            detail="Generation failed to produce a valid answer.",
+            detail="Question answering failed to produce a valid answer.",
         ) from error
 
     return to_ask_response(result)

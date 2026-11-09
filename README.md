@@ -75,7 +75,7 @@ The system should avoid fabricating research findings, experimental results, or 
 - [X]  GitHub Actions lint, formatting, and test checks.
 - [X]  Text-based PDF parsing and page-preserving character chunking.
 - [X]  In-memory BM25 retrieval and question answering over a supplied PDF.
-- [X]  FastAPI health and synthetic question-answering endpoints.
+- [X]  FastAPI health and persistent ResNet question-answering endpoints.
 - [X]  Small ResNet development-set comparison of BM25 and cached dense retrieval.
 - [X]  PostgreSQL/pgvector storage and a repeatable cache-only ResNet import command.
 - [X]  Manual comparison of pgvector and in-memory dense top-3 evidence on five questions.
@@ -83,12 +83,13 @@ The system should avoid fabricating research findings, experimental results, or 
 ### Planned / Not Yet Implemented
 
 - [ ]  Broader retrieval evaluation and systematic generation evaluation on real papers.
-- [ ]  Connect persistent dense retrieval to the question-answering paths.
+- [X]  Connect persistent dense retrieval to HTTP question answering.
+- [ ]  Offer persistent dense retrieval through the QA CLI.
 - [ ]  Validate citations against source evidence.
 
 The project supports a synthetic demo and a single text-based PDF RAG workflow.
-Persistent dense retrieval is implemented separately from the CLI and HTTP
-question-answering paths. OCR, broad evaluation, and automatic citation
+HTTP question answering uses persistent dense retrieval; the PDF QA CLI
+still uses in-memory BM25. OCR, broad evaluation, and automatic citation
 validation are not yet implemented.
 
 ## Development Setup
@@ -175,10 +176,13 @@ CMD / Anaconda Prompt session:
 set "GEMINI_API_KEY=YOUR_API_KEY"
 ```
 
-Start the local development server:
+First set up the database and import the ResNet cache using the
+[persistent storage instructions](#persistent-storage-with-postgresql-and-pgvector).
+Provide `PG_CONN_STR` and `GEMINI_API_KEY` in the local `.env` file or process
+environment. Start the local development server from the repository root:
 
 ```bat
-python -m uvicorn llmrag.api:app --reload
+python -m uvicorn llmrag.api:app --reload --env-file .env
 ```
 
 - Health check: http://127.0.0.1:8000/health
@@ -190,13 +194,16 @@ In `/docs`, expand `POST /ask`, select **Try it out**, and submit:
 
 ```json
 {
-  "question": "What does image segmentation assign to each pixel?",
-  "top_k": 1
+  "question": "What are identity shortcut connections?",
+  "top_k": 3
 }
 ```
 
-The endpoint currently uses the synthetic document collection and the
-default Gemini model. It does not use the PDF supplied to the CLI.
+The endpoint embeds the question, retrieves from the PostgreSQL table
+`resnet_gemini_768_v1`, and generates an answer from the retrieved evidence.
+It uses `gemini-embedding-001` for queries and the default Gemini generation
+model. It does not reread the PDF or generate document embeddings per request.
+The PDF supplied to the separate QA CLI does not change this database table.
 
 Successful responses contain `answer` and `evidence`. Each evidence item
 includes its ID, paper ID, title, PDF page index, and content.
@@ -205,11 +212,13 @@ includes its ID, paper ID, title, PDF page index, and content.
 
 - `200`: Request completed successfully.
 - `422`: Request validation failed.
-- `502`: Generation returned no valid answer text.
+- `502`: A caught `RuntimeError` interrupted question answering, including
+  invalid embedding responses or empty generated answer text.
 
 `GET /health` checks application responsiveness only and does not call
-Gemini. Real `/ask` generation consumes model quota. Automated tests
-replace the client dependency and do not call Gemini.
+Gemini or PostgreSQL. Real `/ask` requests consume query embedding quota and,
+when evidence is returned, generation quota. Automated tests replace the
+client and retriever dependencies and mock query embeddings.
 
 The API has no caller authentication or rate limiting and is intended
 for local development. Other provider errors are not yet mapped to
@@ -313,7 +322,7 @@ and [raw results](docs/experiments/resnet-pgvector-dev-run-01.json).
 
 This is a storage migration check, not a new answer-accuracy measurement.
 The pgvector query/comparison sequence is not yet packaged as a command.
-`POST /ask` still uses synthetic documents, and the PDF QA CLI still rebuilds
-its in-memory BM25 index. Automated tests mock database writes and do not
+`POST /ask` now uses the persistent table, while the PDF QA CLI still rebuilds
+its in-memory BM25 index. Automated tests mock database access and do not
 require Docker or Gemini credentials; they do not replace the manual database
 integration checks recorded here.
