@@ -265,6 +265,7 @@ existing settings. For a password containing only letters and digits, use:
 
 ```dotenv
 POSTGRES_PASSWORD=REPLACE_WITH_YOUR_LOCAL_PASSWORD
+GEMINI_API_KEY=REPLACE_WITH_YOUR_GEMINI_KEY
 PG_CONN_STR="host=127.0.0.1 port=5433 dbname=papertrace user=papertrace_app password=${POSTGRES_PASSWORD} connect_timeout=5"
 ```
 
@@ -326,3 +327,62 @@ The pgvector query/comparison sequence is not yet packaged as a command.
 its in-memory BM25 index. Automated tests mock database access and do not
 require Docker or Gemini credentials; they do not replace the manual database
 integration checks recorded here.
+
+## Run the API with Docker Compose
+
+Set up the database extension and import the existing embeddings as described
+above. The image does not include PDFs or embedding caches and does not import
+documents on startup. Both `POSTGRES_PASSWORD` and `GEMINI_API_KEY` must be set
+for the current Compose configuration to resolve, including database-only commands.
+
+```bat
+docker compose config --quiet
+docker compose up -d --build api
+docker compose ps
+docker compose logs --tail=30 api
+```
+
+The API is available at http://127.0.0.1:8001/docs and its health endpoint at
+http://127.0.0.1:8001/health. Submit the same `/ask` request shown above.
+Real requests consume embedding and generation quota. `/health` checks HTTP
+responsiveness only, not database or model availability.
+
+The Dockerfile installs the runtime package in a Python 3.11 Linux image and
+runs Uvicorn as a non-root user. `.dockerignore` excludes local credentials,
+data, tests, and documentation from the build context. Compose injects only
+the configured environment variables at container creation; credentials are
+not copied into the image. The startup database health check uses `pg_isready`
+and does not validate the extension, table contents, or application queries.
+
+### Database addresses
+
+| Client | Database host and port |
+| --- | --- |
+| Python running on Windows | `127.0.0.1:5433` |
+| API container on the Compose network | `db:5432` |
+
+Compose sets the API container's `PG_CONN_STR` explicitly using `db:5432`.
+Keep the host-side `.env` connection string for local Python commands. The
+current Compose password interpolation uses the simple connection-string
+format described above and requires appropriate escaping for special characters.
+
+Check database access without a model call:
+
+```bat
+docker compose exec api python -c "from llmrag.storage import open_document_store; store = open_document_store(); print('Stored documents:', store.count_documents()); store.close()"
+```
+
+For the imported ResNet corpus, the observed count is 75. Updating Compose
+environment values requires `docker compose up -d api` to recreate the
+container; `docker compose restart api` alone does not update its environment.
+After source changes, use `docker compose up -d --build api`.
+
+To stop the services while keeping database data:
+
+```bat
+docker compose down
+```
+
+See the [container smoke test](docs/experiments/resnet-container-smoke.md) for
+the manual verification and limits. This is a local Compose deployment;
+automated image publishing and CD have not yet been implemented.
